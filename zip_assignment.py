@@ -94,8 +94,7 @@ def main():
                     on Github. E.g. 'hw6-dataviz-ndo3'")
             sys.exit()
         # else, we will now create a tinyurl to the github pages of this submission
-        correct_path = "https://github.com/CS1951A-S21-Brown/{}/index.html".format(repo_name)
-        print(correct_path)
+        correct_path = "https://cs1951a-s21-brown.github.io/{}/".format(repo_name)
         # this link will not really be available until you make public your Github Page
         tinyurl = make_tiny(correct_path)
         # also do a binary encoding of your repo name, just in case we cannot get ahold of
@@ -130,12 +129,15 @@ def main():
     zip_path = "dataviz-submission-1951A.zip"
     with zipfile.ZipFile(zip_path, "w") as zip:
         for dirname, _, files in os.walk(os.getcwd()):
-            if '/.' not in dirname:
+            if '{}.'.format(os.sep) not in dirname:
                 for f in files:
                     if f != zip_path and f != "zip_assignment.py" and not(".zip" in f):
                         zip.write(os.path.relpath(os.path.join(dirname, f),\
                                         os.path.join(zip_path, '..'))\
                                     )
+
+
+
 
     print("Done! Wrote the submission zip to {}".format(zip_path))
 
