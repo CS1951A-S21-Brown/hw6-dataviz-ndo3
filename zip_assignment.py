@@ -1,13 +1,10 @@
 """
 This file is to check if the folder that the student is trying to submit
 is of this exact structure (with exact naming):
-| code
-    | fdr_control.py
-    | fwer_control.py
-    | main.py
+| index.html
 | data
-    | <we don't care about what goes on here. we'll test it using our version of the data>
-| written_questions.md
+    | *.csv
+| <all the other stuff that you included with no name requirements>
 
 And then it will zip
 
@@ -75,12 +72,14 @@ def main():
     failed = False
     # If the current directory doesn't contain this script, we'll exit and
     # tell the student to chdir to the right directory
-    if find('index.html', curdir) == None:
-        # We haven't found this file, and so we will print out a message and sys exit
-        print("We cannot find the file index.html in the directory that you are")
-        print("executing this script from. Please use command 'cd <path>' to change to the right")
-        print("directory that contains zip_assignment.py and execute this script again.")
-        sys.exit()
+    for must_have_file in ["index.html", "main.js", "main.css"]:
+        if find(must_have_file, curdir) == None:
+            # We haven't found this file, and so we will print out a message and sys exit
+            print("We cannot find the file {} in the directory that you are".format(must_have_file))
+            print("executing this script from. Please use command 'cd <path>' to change to the right")
+            print("directory that contains zip_assignment.py and execute this script again.")
+            sys.exit()
+
 
     # Alright. Get the name of the repository that they are using
     PATH_TO_SUBMISSIONLINK = "link_to_submission.txt"
@@ -95,7 +94,8 @@ def main():
                     on Github. E.g. 'hw6-dataviz-ndo3'")
             sys.exit()
         # else, we will now create a tinyurl to the github pages of this submission
-        correct_path = "https://cs1951a-s21-brown.github.io/{}/index.html".format(repo_name)
+        correct_path = "https://github.com/CS1951A-S21-Brown/{}/index.html".format(repo_name)
+        print(correct_path)
         # this link will not really be available until you make public your Github Page
         tinyurl = make_tiny(correct_path)
         # also do a binary encoding of your repo name, just in case we cannot get ahold of
@@ -129,17 +129,13 @@ def main():
     print("Writting into zip file...")
     zip_path = "dataviz-submission-1951A.zip"
     with zipfile.ZipFile(zip_path, "w") as zip:
-        for root, dirs, files in os.walk(os.getcwd()):
-            # skipping the hidden files
-            for e in root.split("/")[1:]:
-                if e[0] == ".": break
+        for dirname, _, files in os.walk(os.getcwd()):
+            if '/.' not in dirname:
                 for f in files:
                     if f != zip_path and f != "zip_assignment.py" and not(".zip" in f):
-                        zip.write(os.path.join(root, f),\
-                                    os.path.relpath(os.path.join(root, f),\
+                        zip.write(os.path.relpath(os.path.join(dirname, f),\
                                         os.path.join(zip_path, '..'))\
                                     )
-
 
     print("Done! Wrote the submission zip to {}".format(zip_path))
 
